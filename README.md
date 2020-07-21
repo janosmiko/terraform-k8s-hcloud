@@ -41,7 +41,7 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `kubernetes_version`  | `1.15.5`                | Kubernetes version that will be installed                                                                                   | No  |
 | `feature_gates`       | ``                      | Add your own Feature Gates for Kubeadm                                                                                      | No  |
 | `calico_enabled`      | `false`                 | Installs Calico Network Provider after the master comes up                                                                  | No  |
-
+| `location`		| `nbg1`		  | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									| No  |
 All variables cloud be passed through `environment variables` or a `tfvars` file.
 
 An example for a `tfvars` file would be the following `terraform.tfvars`

@@ -54,3 +54,6 @@ variable "calico_enabled" {
   default = false
 }
 
+variable "location" {
+  default = "nbg1"
+}

@@ -13,6 +13,7 @@ resource "hcloud_server" "master" {
   server_type = var.master_type
   image       = var.master_image
   ssh_keys    = [hcloud_ssh_key.k8s_admin.id]
+  location    = var.location
 
   connection {
     host        = self.ipv4_address
@@ -62,6 +63,7 @@ resource "hcloud_server" "node" {
   image       = var.node_image
   depends_on  = [hcloud_server.master]
   ssh_keys    = [hcloud_ssh_key.k8s_admin.id]
+  location    = var.location
 
   connection {
     host        = self.ipv4_address
