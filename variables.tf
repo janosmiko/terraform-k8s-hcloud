@@ -57,3 +57,7 @@ variable "calico_enabled" {
 variable "location" {
   default = "nbg1"
 }
+
+variable "ufw_enabled" {
+  default = false
+}

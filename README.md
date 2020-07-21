@@ -41,7 +41,9 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `kubernetes_version`  | `1.18.6`                | Kubernetes version that will be installed                                                                                   | No  |
 | `feature_gates`       | ``                      | Add your own Feature Gates for Kubeadm                                                                                      | No  |
 | `calico_enabled`      | `false`                 | Installs Calico Network Provider after the master comes up                                                                  | No  |
-| `location`		| `nbg1`		  | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									| No  |
+| `location`	        	| `nbg1`		              | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									                                                  | No  |
+| `ufw_enabled`        	| `false`		              | Installs rudimentary firewall setup using ufw             								                                                  | No  |
+
 All variables cloud be passed through `environment variables` or a `tfvars` file.
 
 An example for a `tfvars` file would be the following `terraform.tfvars`
@@ -80,5 +82,5 @@ Please use the [issue tracker](https://github.com/solidnerd/terraform-k8s-hcloud
 
 **Tested with**
 
-- Terraform [v0.12.24](https://github.com/hashicorp/terraform/tree/v0.12.8)
+- Terraform [v0.12.24](https://github.com/hashicorp/terraform/tree/v0.12.24)
 - provider.hcloud [v1.19.0](https://github.com/terraform-providers/terraform-provider-hcloud)
