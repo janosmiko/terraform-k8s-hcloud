@@ -27,6 +27,11 @@ resource "hcloud_server" "master" {
   }
 
   provisioner "file" {
+    source      = "files/resolv.conf"
+    destination = "/etc/resolv_hetzer.conf"
+  }
+
+  provisioner "file" {
     source      = "scripts/bootstrap.sh"
     destination = "/root/bootstrap.sh"
   }
@@ -69,6 +74,11 @@ resource "hcloud_server" "node" {
     host        = self.ipv4_address
     type        = "ssh"
     private_key = file(var.ssh_private_key)
+  }
+
+  provisioner "file" {
+    source      = "files/resolv.conf"
+    destination = "/etc/resolv_hetzer.conf"
   }
 
   provisioner "file" {
