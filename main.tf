@@ -46,7 +46,7 @@ resource "hcloud_server" "master" {
   }
 
   provisioner "remote-exec" {
-    inline = ["FEATURE_GATES=${var.feature_gates} bash /root/master.sh"]
+    inline = ["FEATURE_GATES=${var.feature_gates} POD_NETWORK_CIDR=${var.pod_network_cidr} bash /root/master.sh"]
   }
 
   provisioner "local-exec" {

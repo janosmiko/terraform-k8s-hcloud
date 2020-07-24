@@ -61,3 +61,7 @@ variable "location" {
 variable "ufw_enabled" {
   default = false
 }
+
+variable "pod_network_cidr" {
+  default = "192.168.0.0/16"
+}

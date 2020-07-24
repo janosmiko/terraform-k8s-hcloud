@@ -4,9 +4,9 @@ set -eu
 # Initialize Cluster
 if [[ -n "$FEATURE_GATES" ]]
 then
-  kubeadm init --pod-network-cidr=192.168.0.0/16 --feature-gates "$FEATURE_GATES"
+  kubeadm init --pod-network-cidr="$POD_NETWORK_CIDR" --feature-gates "$FEATURE_GATES"
 else
-  kubeadm init  --pod-network-cidr=192.168.0.0/16
+  kubeadm init  --pod-network-cidr="$POD_NETWORK_CIDR"
 fi
 systemctl enable docker kubelet
 

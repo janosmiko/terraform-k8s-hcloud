@@ -42,9 +42,12 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `feature_gates`       | ``                      | Add your own Feature Gates for Kubeadm                                                                                      | No  |
 | `calico_enabled`      | `false`                 | Installs Calico Network Provider after the master comes up                                                                  | No  |
 | `location`	        	| `nbg1`		              | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									                                                  | No  |
-| `ufw_enabled`        	| `false`		              | Installs rudimentary firewall setup using ufw             								                                                  | No  |
+| `ufw_enabled`        	| `false`		              | Installs rudimentary firewall setup using ufw*             								                                                  | No  |
+| `pod_network_cidr`   	| `192.168.0.0/16`		    | Network range of pod ips                                   								                                                  | No  |
 
 All variables cloud be passed through `environment variables` or a `tfvars` file.
+
+*services with type NodePort are still accessible because kube-proxy creates iptables rules overwriting ufw
 
 An example for a `tfvars` file would be the following `terraform.tfvars`
 
