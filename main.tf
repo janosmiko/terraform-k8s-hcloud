@@ -7,6 +7,25 @@ resource "hcloud_ssh_key" "k8s_admin" {
   public_key = file(var.ssh_public_key)
 }
 
+resource "hcloud_network" "k8s-net" {
+  name = "k8s-net"
+  ip_range = "10.0.0.0/8"
+}
+
+resource "hcloud_network_subnet" "node-net" {
+  network_id = "${hcloud_network.k8s-net.id}"
+  type = "cloud"
+  network_zone = "eu-central"
+  ip_range   = "10.8.0.0/16"
+}
+
+resource "hcloud_network_subnet" "pod-net" {
+  network_id = "${hcloud_network.k8s-net.id}"
+  type = "cloud"
+  network_zone = "eu-central"
+  ip_range   = "10.244.0.0/16"
+}
+
 resource "hcloud_server" "master" {
   count       = var.master_count
   name        = "master-${count.index + 1}"
@@ -117,3 +136,16 @@ resource "hcloud_server" "node" {
   }
 }
 
+resource "hcloud_server_network" "master_network" {
+  count = length(hcloud_server.master)
+
+  server_id = "${hcloud_server.master[count.index].id}"
+  network_id = "${hcloud_network.k8s-net.id}"
+}
+
+resource "hcloud_server_network" "node_network" {
+  count = length(hcloud_server.node)
+
+  server_id = "${hcloud_server.node[count.index].id}"
+  network_id = "${hcloud_network.k8s-net.id}"
+}
