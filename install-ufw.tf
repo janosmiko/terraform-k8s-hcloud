@@ -12,7 +12,7 @@ resource "null_resource" "ufw-master" {
   }
 
   provisioner "remote-exec" {
-    inline = ["bash /root/master-ufw.sh"]
+    inline = ["NODE_NETWORK_CIDR=${var.node_network_cidr} POD_NETWORK_CIDR=${var.pod_network_cidr} bash /root/master-ufw.sh"]
   }
 
   depends_on = [hcloud_server.master]
@@ -34,7 +34,7 @@ resource "null_resource" "ufw-node" {
 
   # TODO: Fix multiple master ufw rules for nodes
   provisioner "remote-exec" {
-    inline = ["MASTER_IP=${hcloud_server.master[0].ipv4_address} bash /root/node-ufw.sh"]
+    inline = ["MASTER_IP=${hcloud_server.master[0].ipv4_address} NODE_NETWORK_CIDR=${var.node_network_cidr} POD_NETWORK_CIDR=${var.pod_network_cidr}  bash /root/node-ufw.sh"]
   }
 
   depends_on = [hcloud_server.master]

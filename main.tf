@@ -9,21 +9,14 @@ resource "hcloud_ssh_key" "k8s_admin" {
 
 resource "hcloud_network" "k8s-net" {
   name = "k8s-net"
-  ip_range = "10.0.0.0/8"
+  ip_range = var.network_cidr
 }
 
 resource "hcloud_network_subnet" "node-net" {
   network_id = "${hcloud_network.k8s-net.id}"
   type = "cloud"
   network_zone = "eu-central"
-  ip_range   = "10.8.0.0/16"
-}
-
-resource "hcloud_network_subnet" "pod-net" {
-  network_id = "${hcloud_network.k8s-net.id}"
-  type = "cloud"
-  network_zone = "eu-central"
-  ip_range   = "10.244.0.0/16"
+  ip_range   = var.node_network_cidr
 }
 
 resource "hcloud_server" "master" {

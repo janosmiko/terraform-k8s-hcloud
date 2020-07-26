@@ -15,6 +15,7 @@ apt-get -qq install -y ufw
 ufw --force reset && \
   ufw allow in from $MASTER_IP to any && \
   ufw allow ssh && \
-  ufw allow in from 192.168.0.0/16 to any && \
+  ufw allow in from $NODE_NETWORK_CIDR to any && \
+  ufw allow in from $POD_NETWORK_CIDR to any && \
   ufw default deny incoming && \
   ufw --force enable

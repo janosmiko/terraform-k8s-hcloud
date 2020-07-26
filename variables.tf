@@ -62,6 +62,14 @@ variable "ufw_enabled" {
   default = false
 }
 
+variable "network_cidr" {
+  default = "10.0.0.0/8"
+}
+
 variable "pod_network_cidr" {
-  default = "192.168.0.0/16"
+  default = "10.244.0.0/16"
+}
+
+variable "node_network_cidr" {
+  default = "10.8.0.0/16"
 }

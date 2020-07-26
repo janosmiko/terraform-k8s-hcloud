@@ -43,7 +43,9 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `calico_enabled`      | `false`                 | Installs Calico Network Provider after the master comes up                                                                  | No  |
 | `location`	        	| `nbg1`		              | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									                                                  | No  |
 | `ufw_enabled`        	| `false`		              | Installs rudimentary firewall setup using ufw*             								                                                  | No  |
-| `pod_network_cidr`   	| `192.168.0.0/16`		    | Network range of pod ips                                   								                                                  | No  |
+| `pod_network_cidr`   	| `10.244.0.0/16` 		    | Network range of pod ips                                   								                                                  | No  |
+| `node_network_cidr`   | `10.8.0.0/16`		        | Network range of node ips                                  								                                                  | No  |
+| `network_cidr`        | `10.0.0.0/8`		        | Network range of vpc network                               								                                                  | No  |
 
 All variables cloud be passed through `environment variables` or a `tfvars` file.
 
