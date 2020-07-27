@@ -73,3 +73,7 @@ variable "pod_network_cidr" {
 variable "node_network_cidr" {
   default = "10.8.0.0/16"
 }
+
+variable "csi_driver_enabled" {
+  default = false
+}
