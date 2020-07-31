@@ -46,7 +46,8 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `pod_network_cidr`   	| `10.244.0.0/16` 		    | Network range of pod ips                                   								                                                  | No  |
 | `node_network_cidr`   | `10.8.0.0/16`		        | Network range of node ips                                  								                                                  | No  |
 | `network_cidr`        | `10.0.0.0/8`		        | Network range of vpc network                               								                                                  | No  |
-| `csi_driver_enabled`  | `false`	                | Installs [hcloud-csi driver](https://github.com/hetznercloud/csi-driver) for persistent volume support   								                                                  | No  |
+| `csi_driver_enabled`  | `false`	                | Installs [hcloud-csi driver](https://github.com/hetznercloud/csi-driver) for persistent volume support                      | No  |
+| `hcloud_controller_manager_enabled` | `false`   | Installs [hcloud-cloud-controller-manager](https://github.com/hetznercloud/hcloud-cloud-controller-manager) for persistent volume support | No  |
 
 All variables cloud be passed through `environment variables` or a `tfvars` file.
 

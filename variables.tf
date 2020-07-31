@@ -77,3 +77,7 @@ variable "node_network_cidr" {
 variable "csi_driver_enabled" {
   default = false
 }
+
+variable "hcloud_controller_manager_enabled" {
+  default = false
+}

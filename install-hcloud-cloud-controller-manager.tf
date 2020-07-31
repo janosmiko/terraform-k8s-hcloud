@@ -1,4 +1,5 @@
 resource "null_resource" "hcloud-cloud-controller-manager" {
+  count = var.hcloud_controller_manager_enabled ? 1 : 0
 
   connection {
     host        = hcloud_server.master.0.ipv4_address
@@ -14,6 +15,6 @@ resource "null_resource" "hcloud-cloud-controller-manager" {
     inline = ["HCLOUD_TOKEN=${var.hcloud_token} CLUSTER_NETWORK=${hcloud_network.k8s-net.id} bash /root/hcloud-cloud-controller-manager.sh"]
   }
 
-  depends_on = [hcloud_server.master]
+  depends_on = [hcloud_server.master, null_resource.calico]
 }
 
