@@ -2,58 +2,71 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-resource "hcloud_ssh_key" "k8s_admin" {
-  name       = "k8s_admin"
-  public_key = file(var.ssh_public_key)
+resource "tls_private_key" "this" {
+  count     = var.public_key == "" ? 1 : 0
+  algorithm = "RSA"
+  rsa_bits  = 2048
 }
 
-resource "hcloud_network" "k8s-net" {
-  name = "k8s-net"
+resource "local_file" "private_key" {
+  sensitive_content = tls_private_key.this[0].private_key_pem
+  filename          = "${path.module}/secrets/id_rsa"
+  file_permission   = "0600"
+}
+
+resource "hcloud_ssh_key" "this" {
+  name       = var.key_name == "" ? "${var.name}-key" : var.key_name
+  public_key = var.public_key == "" ? tls_private_key.this[0].public_key_openssh : var.public_key
+}
+
+resource "hcloud_network" "this" {
+  name     = "${var.name}-net"
   ip_range = var.network_cidr
 }
 
-resource "hcloud_network_subnet" "node-net" {
-  network_id = "${hcloud_network.k8s-net.id}"
-  type = "cloud"
+resource "hcloud_network_subnet" "node" {
+  network_id   = hcloud_network.this.id
+  type         = "cloud"
   network_zone = "eu-central"
-  ip_range   = var.node_network_cidr
+  ip_range     = var.node_network_cidr
 }
 
 resource "hcloud_server" "master" {
   count       = var.master_count
-  name        = "master-${count.index + 1}"
+  name        = "${var.name}-master-${count.index + 1}"
   server_type = var.master_type
   image       = var.master_image
-  ssh_keys    = [hcloud_ssh_key.k8s_admin.id]
+  ssh_keys    = [hcloud_ssh_key.this.id]
   location    = var.location
 
   connection {
     host        = self.ipv4_address
     type        = "ssh"
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "file" {
-    source      = "files/10-kubeadm.conf"
+    source      = "${path.module}/files/10-kubeadm.conf"
     destination = "/root/10-kubeadm.conf"
   }
 
   provisioner "file" {
-    source      = "files/resolv.conf"
+    source      = "${path.module}/files/resolv.conf"
     destination = "/etc/resolv_hetzer.conf"
   }
 
   provisioner "file" {
-    source      = "scripts/bootstrap.sh"
+    source      = "${path.module}/scripts/bootstrap.sh"
     destination = "/root/bootstrap.sh"
   }
 
   provisioner "remote-exec" {
-    inline = ["DOCKER_VERSION=${var.docker_version} KUBERNETES_VERSION=${var.kubernetes_version} bash /root/bootstrap.sh"]
+    inline = [
+      "DOCKER_VERSION=${var.docker_version} KUBERNETES_VERSION=${var.kubernetes_version} bash /root/bootstrap.sh"]
   }
 
   provisioner "file" {
-    source      = "scripts/master.sh"
+    source      = "${path.module}/scripts/master.sh"
     destination = "/root/master.sh"
   }
 
@@ -62,10 +75,10 @@ resource "hcloud_server" "master" {
   }
 
   provisioner "local-exec" {
-    command = "bash scripts/copy-kubeadm-token.sh"
+    command = "bash ${path.module}/scripts/copy-kubeadm-token.sh"
 
     environment = {
-      SSH_PRIVATE_KEY = var.ssh_private_key
+      SSH_PRIVATE_KEY = var.public_key == "" ? local_file.private_key.filename : file(var.private_key)
       SSH_USERNAME    = "root"
       SSH_HOST        = hcloud_server.master[0].ipv4_address
       TARGET          = "${path.module}/secrets/"
@@ -73,38 +86,63 @@ resource "hcloud_server" "master" {
   }
 }
 
+module "kubeadm_join" {
+  source = "matti/resource/shell"
+
+  depends = [
+    hcloud_server.master
+  ]
+
+  command = "cat ${path.module}/secrets/kubeadm_join"
+
+  #trigger = timestamp()
+}
+
+module "admin_conf" {
+  source = "matti/resource/shell"
+
+  depends = [
+    hcloud_server.master
+  ]
+
+  command = "cat ${path.module}/secrets/admin.conf"
+
+  #trigger = timestamp()
+}
+
 resource "hcloud_server" "node" {
   count       = var.node_count
-  name        = "node-${count.index + 1}"
+  name        = "${var.name}-node-${count.index + 1}"
   server_type = var.node_type
   image       = var.node_image
   depends_on  = [hcloud_server.master]
-  ssh_keys    = [hcloud_ssh_key.k8s_admin.id]
+  ssh_keys    = [hcloud_ssh_key.this.id]
   location    = var.location
 
   connection {
     host        = self.ipv4_address
     type        = "ssh"
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "file" {
-    source      = "files/resolv.conf"
+    source      = "${path.module}/files/resolv.conf"
     destination = "/etc/resolv_hetzer.conf"
   }
 
   provisioner "file" {
-    source      = "files/10-kubeadm.conf"
+    source      = "${path.module}/files/10-kubeadm.conf"
     destination = "/root/10-kubeadm.conf"
   }
 
   provisioner "file" {
-    source      = "scripts/bootstrap.sh"
+    source      = "${path.module}/scripts/bootstrap.sh"
     destination = "/root/bootstrap.sh"
   }
 
   provisioner "remote-exec" {
-    inline = ["DOCKER_VERSION=${var.docker_version} KUBERNETES_VERSION=${var.kubernetes_version} bash /root/bootstrap.sh"]
+    inline = [
+      "DOCKER_VERSION=${var.docker_version} KUBERNETES_VERSION=${var.kubernetes_version} bash /root/bootstrap.sh"]
   }
 
   provisioner "file" {
@@ -115,12 +153,12 @@ resource "hcloud_server" "node" {
       host        = self.ipv4_address
       type        = "ssh"
       user        = "root"
-      private_key = file(var.ssh_private_key)
+      private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
     }
   }
 
   provisioner "file" {
-    source      = "scripts/node.sh"
+    source      = "${path.module}/scripts/node.sh"
     destination = "/root/node.sh"
   }
 
@@ -132,13 +170,13 @@ resource "hcloud_server" "node" {
 resource "hcloud_server_network" "master_network" {
   count = length(hcloud_server.master)
 
-  server_id = "${hcloud_server.master[count.index].id}"
-  network_id = "${hcloud_network.k8s-net.id}"
+  server_id  = hcloud_server.master[count.index].id
+  network_id = hcloud_network.this.id
 }
 
 resource "hcloud_server_network" "node_network" {
   count = length(hcloud_server.node)
 
-  server_id = "${hcloud_server.node[count.index].id}"
-  network_id = "${hcloud_network.k8s-net.id}"
+  server_id  = hcloud_server.node[count.index].id
+  network_id = hcloud_network.this.id
 }

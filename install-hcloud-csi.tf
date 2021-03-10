@@ -3,11 +3,11 @@ resource "null_resource" "hcloud-csi" {
 
   connection {
     host        = hcloud_server.master.0.ipv4_address
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "file" {
-    source      = "scripts/install-hcloud-csi.sh"
+    source      = "${path.module}/scripts/install-hcloud-csi.sh"
     destination = "/root/install-hcloud-csi.sh"
   }
 

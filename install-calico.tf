@@ -3,11 +3,11 @@ resource "null_resource" "calico" {
 
   connection {
     host        = hcloud_server.master.0.ipv4_address
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "remote-exec" {
-    inline = ["kubectl apply -f https://docs.projectcalico.org/archive/v3.15/manifests/calico.yaml"]
+    inline = ["kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml"]
   }
 
   depends_on = [hcloud_server.master]

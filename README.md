@@ -1,6 +1,8 @@
 # Terraform Kubernetes on Hetzner Cloud
 
-This repository will help to setup an opionated Kubernetes Cluster with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/) on [Hetzner Cloud](https://www.hetzner.com/cloud?country=us).
+This repository will help to setup an opionated Kubernetes Cluster
+with [kubeadm](https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/)
+on [Hetzner Cloud](https://www.hetzner.com/cloud?country=us).
 
 ## Usage
 
@@ -41,12 +43,12 @@ $ KUBECONFIG=secrets/admin.conf kubectl expose deploy nginx --port=80 --type Nod
 | `kubernetes_version`  | `1.18.6`                | Kubernetes version that will be installed                                                                                   | No  |
 | `feature_gates`       | ``                      | Add your own Feature Gates for Kubeadm                                                                                      | No  |
 | `calico_enabled`      | `false`                 | Installs Calico Network Provider after the master comes up                                                                  | No  |
-| `location`	        	| `nbg1`		              | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)									                                                  | No  |
-| `ufw_enabled`        	| `false`		              | Installs rudimentary firewall setup using ufw*             								                                                  | No  |
-| `pod_network_cidr`   	| `10.244.0.0/16` 		    | Network range of pod ips                                   								                                                  | No  |
-| `node_network_cidr`   | `10.8.0.0/16`		        | Network range of node ips                                  								                                                  | No  |
-| `network_cidr`        | `10.0.0.0/8`		        | Network range of vpc network                               								                                                  | No  |
-| `csi_driver_enabled`  | `false`	                | Installs [hcloud-csi driver](https://github.com/hetznercloud/csi-driver) for persistent volume support                      | No  |
+| `location`            | `nbg1`                  | Location of hetzner datacenter (`nbg1`, `fsn1` or `hel1`)                                                                    | No  |
+| `ufw_enabled`          | `false`                  | Installs rudimentary firewall setup using ufw*                                                                              | No  |
+| `pod_network_cidr`    | `10.244.0.0/16`        | Network range of pod ips                                                                                                    | No  |
+| `node_network_cidr`   | `10.8.0.0/16`            | Network range of node ips                                                                                                    | No  |
+| `network_cidr`        | `10.0.0.0/8`            | Network range of vpc network                                                                                                | No  |
+| `csi_driver_enabled`  | `false`                  | Installs [hcloud-csi driver](https://github.com/hetznercloud/csi-driver) for persistent volume support                      | No  |
 | `hcloud_controller_manager_enabled` | `false`   | Installs [hcloud-cloud-controller-manager](https://github.com/hetznercloud/hcloud-cloud-controller-manager) for persistent volume support | No  |
 
 All variables cloud be passed through `environment variables` or a `tfvars` file.
@@ -79,15 +81,14 @@ $ terraform apply \
   -var node_count=2
 ```
 
-
 ## Contributing
 
 ### Bug Reports & Feature Requests
 
-Please use the [issue tracker](https://github.com/solidnerd/terraform-k8s-hcloud/issues) to report any bugs or file feature requests.
-
+Please use the [issue tracker](https://github.com/solidnerd/terraform-k8s-hcloud/issues) to report any bugs or file
+feature requests.
 
 **Tested with**
 
-- Terraform [v0.12.24](https://github.com/hashicorp/terraform/tree/v0.12.24)
+- Terraform [v0.14.7](https://github.com/hashicorp/terraform/tree/v0.12.24)
 - provider.hcloud [v1.19.0](https://github.com/terraform-providers/terraform-provider-hcloud)

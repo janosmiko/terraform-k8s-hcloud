@@ -1,7 +1,12 @@
 variable "hcloud_token" {
 }
 
+variable "name" {
+  default = "k8s"
+}
+
 variable "master_count" {
+  default = 1
 }
 
 variable "master_image" {
@@ -15,6 +20,7 @@ variable "master_type" {
 }
 
 variable "node_count" {
+  default = 2
 }
 
 variable "node_image" {
@@ -27,14 +33,17 @@ variable "node_type" {
   default     = "cx21"
 }
 
-variable "ssh_private_key" {
-  description = "Private Key to access the machines"
-  default     = "~/.ssh/id_ed25519"
+variable "public_key" {
+  description = "Public Key to authorized the access for the machines"
+  default     = ""
+  #default     = "~/.ssh/id_rsa.pub"
+}
+variable "private_key" {
+  default = "~/.ssh/id_rsa"
 }
 
-variable "ssh_public_key" {
-  description = "Public Key to authorized the access for the machines"
-  default     = "~/.ssh/id_ed25519.pub"
+variable "key_name" {
+  default = ""
 }
 
 variable "docker_version" {
@@ -51,7 +60,7 @@ variable "feature_gates" {
 }
 
 variable "calico_enabled" {
-  default = false
+  default = true
 }
 
 variable "location" {
@@ -59,7 +68,12 @@ variable "location" {
 }
 
 variable "ufw_enabled" {
-  default = false
+  default = true
+}
+
+variable "ufw_allowed_ips" {
+  type    = list(string)
+  default = []
 }
 
 variable "network_cidr" {

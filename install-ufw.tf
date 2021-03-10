@@ -3,16 +3,22 @@ resource "null_resource" "ufw-master" {
 
   connection {
     host        = hcloud_server.master[count.index].ipv4_address
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "file" {
-    source      = "scripts/master-ufw.sh"
+    source      = "${path.module}/scripts/master-ufw.sh"
     destination = "/root/master-ufw.sh"
   }
 
   provisioner "remote-exec" {
-    inline = ["NODE_NETWORK_CIDR=${var.node_network_cidr} POD_NETWORK_CIDR=${var.pod_network_cidr} bash /root/master-ufw.sh"]
+    inline = [
+      "set -eux",
+      "export MASTER_IPS='${join(" ", hcloud_server.master.*.ipv4_address)}'",
+      "export NODE_NETWORK_CIDR='${var.node_network_cidr}'",
+      "export POD_NETWORK_CIDR='${var.pod_network_cidr}'",
+      "export FIREWALL_ALLOWED_IPS='${join(" ", var.ufw_allowed_ips)}'",
+      "bash /root/master-ufw.sh"]
   }
 
   depends_on = [hcloud_server.master]
@@ -24,17 +30,23 @@ resource "null_resource" "ufw-node" {
 
   connection {
     host        = hcloud_server.node[count.index].ipv4_address
-    private_key = file(var.ssh_private_key)
+    private_key = var.public_key == "" ? tls_private_key.this[0].private_key_pem : file(var.private_key)
   }
 
   provisioner "file" {
-    source      = "scripts/node-ufw.sh"
+    source      = "${path.module}/scripts/node-ufw.sh"
     destination = "/root/node-ufw.sh"
   }
 
-  # TODO: Fix multiple master ufw rules for nodes
   provisioner "remote-exec" {
-    inline = ["MASTER_IP=${hcloud_server.master[0].ipv4_address} NODE_NETWORK_CIDR=${var.node_network_cidr} POD_NETWORK_CIDR=${var.pod_network_cidr}  bash /root/node-ufw.sh"]
+    inline = [
+      "set -eux",
+      "export MASTER_IPS='${join(" ", hcloud_server.master.*.ipv4_address)}'",
+      "export NODE_NETWORK_CIDR='${var.node_network_cidr}'",
+      "export POD_NETWORK_CIDR='${var.pod_network_cidr}'",
+      "export FIREWALL_ALLOWED_IPS='${join(" ", var.ufw_allowed_ips)}'",
+      "bash /root/node-ufw.sh"
+    ]
   }
 
   depends_on = [hcloud_server.master]

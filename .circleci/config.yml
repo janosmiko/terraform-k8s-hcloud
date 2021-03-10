@@ -13,13 +13,13 @@ jobs:
             find . -type f -name '*.sh' | xargs shellcheck --external-sources
   validate_terraform:
     docker:
-      - image: hashicorp/terraform:0.11.7
+      - image: hashicorp/terraform:0.14.7
     steps:
       - checkout
       - run:
           name: Validate Terraform Formatting
           command: "[ -z \"$(terraform fmt -write=false)\" ] || { terraform fmt -write=false -diff; exit 1;}"
-          
+
 workflows:
   version: 2
   validate:

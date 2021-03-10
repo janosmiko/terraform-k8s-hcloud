@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-set -eu
+set -eux
 
 eval "$(cat /tmp/kubeadm_join)"
 systemctl enable docker kubelet

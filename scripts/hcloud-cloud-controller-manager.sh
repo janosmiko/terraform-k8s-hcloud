@@ -1,5 +1,5 @@
 #!/usr/bin/bas
-set -eu
+set -eux
 
 #create secret with hcloud token and network id
 kubectl -n kube-system create secret generic hcloud --from-literal=token=$HCLOUD_TOKEN --from-literal=network=$CLUSTER_NETWORK --dry-run=client -o yaml | kubectl apply -f -
