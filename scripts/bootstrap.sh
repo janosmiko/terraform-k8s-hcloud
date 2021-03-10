@@ -31,7 +31,8 @@ apt-get -qq update && apt-get -qq install -y docker-ce
 
 cat >/etc/docker/daemon.json <<EOF
 {
-  "storage-driver":"overlay2"
+  "storage-driver":"overlay2",
+  "exec-opts": ["native.cgroupdriver=systemd"]
 }
 EOF
 

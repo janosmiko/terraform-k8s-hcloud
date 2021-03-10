@@ -38,6 +38,12 @@ resource "hcloud_server" "master" {
   image       = var.master_image
   ssh_keys    = [hcloud_ssh_key.this.id]
   location    = var.location
+  network {
+    network_id = hcloud_network.this.id
+  }
+  depends_on  = [
+    hcloud_network_subnet.node
+  ]
 
   connection {
     host        = self.ipv4_address
@@ -95,19 +101,19 @@ module "kubeadm_join" {
 
   command = "cat ${path.module}/secrets/kubeadm_join"
 
-  #trigger = timestamp()
+  depends_on = [
+    hcloud_server.master
+  ]
 }
 
 module "admin_conf" {
   source = "matti/resource/shell"
 
-  depends = [
-    hcloud_server.master
-  ]
-
   command = "cat ${path.module}/secrets/admin.conf"
 
-  #trigger = timestamp()
+  depends_on = [
+    hcloud_server.master
+  ]
 }
 
 resource "hcloud_server" "node" {
@@ -115,9 +121,16 @@ resource "hcloud_server" "node" {
   name        = "${var.name}-node-${count.index + 1}"
   server_type = var.node_type
   image       = var.node_image
-  depends_on  = [hcloud_server.master]
   ssh_keys    = [hcloud_ssh_key.this.id]
   location    = var.location
+
+  network {
+    network_id = hcloud_network.this.id
+  }
+  depends_on = [
+    hcloud_server.master,
+    hcloud_network_subnet.node
+  ]
 
   connection {
     host        = self.ipv4_address
@@ -165,18 +178,19 @@ resource "hcloud_server" "node" {
   provisioner "remote-exec" {
     inline = ["bash /root/node.sh"]
   }
+
 }
 
-resource "hcloud_server_network" "master_network" {
-  count = length(hcloud_server.master)
+#resource "hcloud_server_network" "master_network" {
+#  count = length(hcloud_server.master)
 
-  server_id  = hcloud_server.master[count.index].id
-  network_id = hcloud_network.this.id
-}
+#  server_id  = hcloud_server.master[count.index].id
+#  network_id = hcloud_network.this.id
+#}
 
-resource "hcloud_server_network" "node_network" {
-  count = length(hcloud_server.node)
+#resource "hcloud_server_network" "node_network" {
+#  count = length(hcloud_server.node)
 
-  server_id  = hcloud_server.node[count.index].id
-  network_id = hcloud_network.this.id
-}
+#  server_id  = hcloud_server.node[count.index].id
+#  network_id = hcloud_network.this.id
+#}

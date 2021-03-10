@@ -47,11 +47,11 @@ variable "key_name" {
 }
 
 variable "docker_version" {
-  default = "19.03"
+  default = "20.10"
 }
 
 variable "kubernetes_version" {
-  default = "1.18.6"
+  default = "1.20.4"
 }
 
 variable "feature_gates" {

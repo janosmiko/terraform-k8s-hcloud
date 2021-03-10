@@ -7,5 +7,5 @@ output "master_ips" {
 }
 
 output "k8s_config" {
-  value = module.admin_conf
+  value = module.admin_conf.stdout
 }
