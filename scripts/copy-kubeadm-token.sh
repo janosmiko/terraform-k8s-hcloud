@@ -15,5 +15,10 @@ scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
 
 scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
   -i "${SSH_PRIVATE_KEY}" \
+  "${SSH_USERNAME}@${SSH_HOST}:/tmp/kubeadm_master_join" \
+  "${TARGET}"
+
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+  -i "${SSH_PRIVATE_KEY}" \
   "${SSH_USERNAME}@${SSH_HOST}:/etc/kubernetes/admin.conf" \
   "${TARGET}"

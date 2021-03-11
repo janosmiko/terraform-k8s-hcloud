@@ -7,6 +7,10 @@ variable "name" {
 
 variable "master_count" {
   default = 1
+  validation {
+    condition     = var.master_count == 1 || var.master_count >= 3
+    error_message = "Should be exactly 1 or (3 or more)."
+  }
 }
 
 variable "master_image" {
@@ -47,7 +51,7 @@ variable "key_name" {
 }
 
 variable "docker_version" {
-  default = "20.10"
+  default = "19.03"
 }
 
 variable "kubernetes_version" {
@@ -75,6 +79,9 @@ variable "ufw_allowed_ips" {
   type    = list(string)
   default = []
 }
+variable "load_balancer_api_server_listen_port" {
+  default = 6443
+}
 
 variable "network_cidr" {
   default = "10.0.0.0/8"
@@ -89,9 +96,9 @@ variable "node_network_cidr" {
 }
 
 variable "csi_driver_enabled" {
-  default = false
+  default = true
 }
 
 variable "hcloud_controller_manager_enabled" {
-  default = false
+  default = true
 }

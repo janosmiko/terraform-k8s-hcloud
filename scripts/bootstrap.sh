@@ -27,6 +27,7 @@ add-apt-repository \
   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
    $(lsb_release -cs) \
    stable"
+
 apt-get -qq update && apt-get -qq install -y docker-ce
 
 cat >/etc/docker/daemon.json <<EOF

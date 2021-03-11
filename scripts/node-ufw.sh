@@ -9,6 +9,7 @@ waitforapt() {
 }
 
 waitforapt
+
 apt-get -qq update
 apt-get -qq install -y ufw
 
