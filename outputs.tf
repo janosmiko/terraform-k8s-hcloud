@@ -13,3 +13,7 @@ output "master_endpoint" {
 output "k8s_config" {
   value = module.admin_conf.stdout
 }
+
+output "cluster_name" {
+  value = var.name
+}
